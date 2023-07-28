@@ -17,9 +17,17 @@ export default function KanbanComponent() {
     const stepTypes = WorkListTypes();
 
     useEffect(() => {
-        if (!(workList || {}).id)
-            loadWorkList();
-    },);
+        async function fetchData() {
+            if (!!id) {
+
+                const items = await getWorkListById(id)
+
+                setWorkList(items);
+            }
+        }
+        fetchData();
+
+    }, [id]);
 
     const loadWorkList = async () => {
         const items = await getWorkListById(id)
@@ -28,7 +36,6 @@ export default function KanbanComponent() {
     };
 
     const updateStageItem = async (data) => {
-        debugger
         if (!!data) {
             const { item } = data;
             const value = {
@@ -42,7 +49,6 @@ export default function KanbanComponent() {
                     [...(workList.items || []), { id: v4(), ...item }]
             };
             await updateWorkList(id, value);
-            setWorkList(value);
             loadWorkList();
         }
 
@@ -64,12 +70,12 @@ export default function KanbanComponent() {
         setOpenDialog(!openDialog);
     };
 
-    const getStageItems = (stepKey)=>{
-        return (workList||{}).id ? (workList.items||[]).filter(x => x.step.key === stepKey) : []
+    const getStageItems = (stepKey) => {
+        return (workList || {}).id ? (workList.items || []).filter(x => x.step === stepKey) : []
     }
 
     return (
-        <Box sx={{ flexGrow: 1, padding: "20px", margin: "30px 40px", backgroundColor: "#fff9", backgroundSize: "100%" }}>
+        <Box sx={{ flexGrow: 1, padding: "20px", margin: "75px 40px 20px", backgroundColor: "#fff9", backgroundSize: "100%" }}>
             <Typography component={"h1"} variant="row" display={"flex"}>{(workList || {}).name}</Typography>
             <Grid container direction="row" justifyContent="flex-end">
                 <Grid item justifyContent={"end"} marginX={0} marginY={2}>
@@ -81,24 +87,29 @@ export default function KanbanComponent() {
 
             <Grid container spacing={2}>
                 {stepTypes.map((step) => {
-                        return (
-                            <Grid key={step.key} item width={"100%"} sm={4}>
-                                <Paper elevation={3}>
-                                    <Typography component={"h4"} variant={"row"}>{step.name}</Typography>
-                                    {getStageItems(step.key).map(item => (
-                                        <Card key={item.id} onClick={() => handleUpdateTask(item, getStageTask(step.name))} style={{ marginBottom: '10px' }}>
-                                            <CardActionArea>
-                                                <CardContent>
-                                                    <Typography variant="h6">{item.name}</Typography>
-                                                    <Typography variant='subtitle1'>item.user.displayName</Typography>
-                                                    <Typography variant='subtitle2'>item.user.email</Typography>
-                                                </CardContent>
-                                            </CardActionArea>
-                                        </Card>
-                                    ))}
-                                </Paper>
-                            </Grid>
-                        );
+                    return (
+                        <Grid key={step.key} item width={"100%"} sm={4}>
+                            <Paper elevation={3} sx={{
+                                minHeight: "200px",
+                                borderRadius: 0,
+                                padding: "7px",
+                                backgroundColor: "#f9f9f9"
+                            }}>
+                                <Typography component={"h4"} variant={"row"} mb={1}>{step.name}</Typography>
+                                {getStageItems(step.key).map(item => (
+                                    <Card key={item.id} onClick={() => handleUpdateTask(item, getStageTask(step.name))} style={{ marginBottom: '10px' }}>
+                                        <CardActionArea>
+                                            <CardContent>
+                                                <Typography variant="h6">{item.name}</Typography>
+                                                <Typography variant='subtitle1'>{item.user.displayName}</Typography>
+                                                <Typography variant='subtitle2'>{item.user.email}</Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                ))}
+                            </Paper>
+                        </Grid>
+                    );
                 })}
             </Grid>
 

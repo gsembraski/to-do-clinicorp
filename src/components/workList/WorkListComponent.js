@@ -6,9 +6,8 @@ import { Box, Button, Card, CardActions, CardContent, Grid, Typography } from "@
 import { ViewKanban } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom';
 
-function WorkListCard(props) {
+function WorkListCard({ item, onUpdate }) {
     const navigate = useNavigate();
-    const { item } = props
 
     function goTo() {
         navigate(`/kanban/${item.id}`);
@@ -26,7 +25,8 @@ function WorkListCard(props) {
                 </CardContent>
 
                 <CardActions>
-                    <ChangeWorkListComponent item={item} />
+                    <ChangeWorkListComponent item={item}
+                        onSave={onUpdate} />
                     <Button onClick={goTo} color="primary" startIcon={<ViewKanban />}>
                         Kanban
                     </Button>
@@ -43,22 +43,17 @@ export default class WorkListComponent extends Component {
     }
 
     async componentDidMount() {
-        var workList = await this.loadWorkList();
-        this.setState({ workList: workList});
+        await this.loadWorkList();
     }
 
-    async componentDidUpdate(){
-        var workList = await this.loadWorkList();
-        this.setState({ workList: workList});
-    }
-
-    async loadWorkList(){
-        return await getAllWorkLists();
+    async loadWorkList() {
+        var workList = await getAllWorkLists();
+        this.setState({ workList: workList });
     }
 
     render() {
         return (
-            <Box sx={{ flexGrow: 1, padding: "20px", margin: "30px 40px", backgroundColor: "#fff9", backgroundSize: "100%" }}>
+            <Box sx={{ flexGrow: 1, padding: "20px", margin: "75px 40px 20px", backgroundColor: "#fff9", backgroundSize: "100%" }}>
                 <Grid
                     container
                     direction="row"
@@ -70,7 +65,7 @@ export default class WorkListComponent extends Component {
                         marginX={0}
                         marginY={2}
                     >
-                        <AddWorkListComponent onSave={this.loadWorkList}/>
+                        <AddWorkListComponent onSave={this.loadWorkList} />
                     </Grid>
                 </Grid>
                 <Grid
@@ -78,7 +73,7 @@ export default class WorkListComponent extends Component {
                     direction="row"
                     spacing={4}
                 >
-                    {this.state.workList.map((item) => (<WorkListCard key={item.id} item={item} />))}
+                    {this.state.workList.map((item) => (<WorkListCard key={item.id} item={item} onUpdate={this.loadWorkList} />))}
 
                 </Grid>
             </Box>

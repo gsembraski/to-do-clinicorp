@@ -62,7 +62,7 @@ function SaveWorkListDialog(props) {
             <DialogActions>
                 <Button onClick={handleClose}>Close</Button>
 
-                <Button onClick={saveValue} autoFocus>
+                <Button onSubmitCapture={saveValue} onClick={saveValue} autoFocus>
                     Save
                 </Button>
             </DialogActions>
@@ -70,7 +70,7 @@ function SaveWorkListDialog(props) {
     );
 }
 
-export function AddWorkListComponent({onSave}) {
+export function AddWorkListComponent({ onSave }) {
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -96,8 +96,7 @@ export function AddWorkListComponent({onSave}) {
     );
 }
 
-export function ChangeWorkListComponent(props) {
-    const { item } = props;
+export function ChangeWorkListComponent({item, onSave}) {
     const [open, setOpen] = React.useState(false);
     const [selectedValue, setSelectedValue] = React.useState(item.id);
 
@@ -108,6 +107,7 @@ export function ChangeWorkListComponent(props) {
     const handleClose = (value) => {
         setOpen(false);
         setSelectedValue(value);
+        onSave();
     };
 
     return (
