@@ -37,16 +37,16 @@ export default function KanbanComponent() {
 
     const updateStageItem = async (data) => {
         if (!!data) {
-            const { item } = data;
+            const { item, deleted } = data;
             const value = {
                 ...workList,
-                items: item.id ?
+                items: (item || {}).id ?
                     workList.items.map(task => {
                         return task.id === item.id ?
                             item :
                             task
-                    }) :
-                    [...(workList.items || []), { id: v4(), ...item }]
+                    }) : (deleted || {}).id ? workList.items.filter(x => x.id !== deleted.id) :
+                        [...(workList.items || []), { id: v4(), ...item }]
             };
             await updateWorkList(id, value);
             loadWorkList();

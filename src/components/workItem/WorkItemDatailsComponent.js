@@ -57,6 +57,10 @@ export class SaveWorkItemDialogComponent extends Component {
         this.setState({ user: null });
     };
 
+    deleteItem = async () => {
+        this.props.onClose({ deleted: this.props.item });
+    }
+
     render() {
         return (
             <Dialog onClose={this.handleClose} open={this.props.open} fullWidth>
@@ -127,7 +131,7 @@ export class SaveWorkItemDialogComponent extends Component {
 
                     <Box sx={{ mt: 2, ml: 2, p: 1 }}>
                         {
-                            !!this.props.item && !this.disabledFields() ? <Button variant="outlined" fullWidth color="error" startIcon={<Delete />}>Delete Item</Button> : null
+                            !!this.props.item && !this.disabledFields() ? <Button onClick={this.deleteItem} variant="outlined" fullWidth color="error" startIcon={<Delete />}>Delete Item</Button> : null
                         }
                     </Box>
                 </DialogContent>
